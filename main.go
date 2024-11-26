@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"uttc_hackathon_backend/config"
 	"uttc_hackathon_backend/handlers"
-	"uttc_hackathon_backend/middleware"
 )
 
 func main() {
@@ -22,9 +21,9 @@ func main() {
 	router := mux.NewRouter()
 
 	// ユーザー関連ルート
-	router.HandleFunc("/users", middleware.VerifyFirebaseToken(handlers.CreateUser)).Methods("POST")
-	router.HandleFunc("/users", middleware.VerifyFirebaseToken(handlers.GetUsers)).Methods("GET")
-	router.HandleFunc("/users", middleware.VerifyFirebaseToken(handlers.DeleteUser)).Methods("DELETE")
+	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
+	router.HandleFunc("/users", handlers.GetUsers).Methods("GET")
+	router.HandleFunc("/users", handlers.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
 
 	// サーバー停止シグナルをキャッチしてDBをクローズ

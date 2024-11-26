@@ -18,11 +18,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.FirebaseUID = r.Header.Get("FirebaseUID")
 	user.ID = utils.GenerateULID()
 
 	query := "INSERT INTO users (id, firebase_uid, name, email) VALUES (?, ?, ?, ?)"
-	_, err := config.DB.Exec(query, user.ID, user.FirebaseUID, user.Name, user.Email)
+	_, err := config.DB.Exec(query, user.ID, user.Name, user.Email)
 	if err != nil {
 		log.Printf("Failed to insert user: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -46,7 +45,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	var users []models.User
 	for rows.Next() {
 		var user models.User
-		if err := rows.Scan(&user.ID, &user.FirebaseUID, &user.Name, &user.Email, &user.DeletedAt); err != nil {
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.DeletedAt); err != nil {
 			http.Error(w, "Failed to parse users", http.StatusInternalServerError)
 			return
 		}
