@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-
 	"log"
 	"net/http"
 	"os"
@@ -10,12 +8,20 @@ import (
 	"syscall"
 	"uttc_hackathon_backend/config"
 	"uttc_hackathon_backend/handlers"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
 	// データベース初期化
 	config.InitDB()
 	defer config.CloseDB()
+
+	// 環境変数からポートを取得
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // デフォルトポート
+	}
 
 	// ルーター設定
 	router := mux.NewRouter()
@@ -26,23 +32,16 @@ func main() {
 	router.HandleFunc("/users", handlers.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
 
-	// 環境変数からポートを取得
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // デフォルトポート
-	}
-
-	// サーバー停止シグナルをキャッチしてDBをクローズ
+	// シグナルキャッチでDBを閉じる
 	closeDBWithSysCall()
 
 	// サーバー起動
-	log.Println("Listening on :8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	log.Printf("Listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatal(err)
 	}
 }
 
-// シグナルキャッチでDBを閉じる
 func closeDBWithSysCall() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
