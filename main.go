@@ -26,6 +26,12 @@ func main() {
 	router.HandleFunc("/users", handlers.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
 
+	// 環境変数からポートを取得
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // デフォルトポート
+	}
+
 	// サーバー停止シグナルをキャッチしてDBをクローズ
 	closeDBWithSysCall()
 
