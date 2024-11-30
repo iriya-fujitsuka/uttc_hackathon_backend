@@ -3,16 +3,16 @@ FROM golang:1.21 AS build
 
 WORKDIR /app
 
-COPY main.go .
+# go.modとgo.sumをコピー
+COPY go.mod go.sum ./
 
-# Initialize go.mod
-RUN go mod init app
+# 依存関係をダウンロード
+RUN go mod download
 
-# スタティックリンクされた Linux 用バイナリを生成
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
+# ソースコード全体をコピー
+COPY . .
 
+# アプリケーションをビルド
 RUN go build -o app main.go
 
 # Run Stage
@@ -20,6 +20,6 @@ FROM gcr.io/distroless/static
 
 COPY --from=build /app/app /
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["/app"]
