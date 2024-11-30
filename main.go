@@ -30,8 +30,8 @@ func main() {
 	closeDBWithSysCall()
 
 	// サーバー起動
-	log.Println("Listening on :8000")
-	if err := http.ListenAndServe(":8000", router); err != nil {
+	log.Println("Listening on :8080")
+	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
 	}
 }
