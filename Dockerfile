@@ -5,6 +5,9 @@ WORKDIR /app
 
 COPY main.go .
 
+# Initialize go.mod
+RUN go mod init app
+
 # スタティックリンクされた Linux 用バイナリを生成
 ENV CGO_ENABLED=0
 ENV GOOS=linux
