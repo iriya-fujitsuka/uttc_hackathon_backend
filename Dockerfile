@@ -12,6 +12,11 @@ RUN go mod download
 # ソースコード全体をコピー
 COPY . .
 
+# Linux用のビルド設定
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
 # アプリケーションをビルド
 RUN go build -o app main.go
 
