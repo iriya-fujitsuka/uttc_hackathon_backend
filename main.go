@@ -1,44 +1,49 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"github.com/gorilla/mux"
+
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"uttc_hackathon_backend/config"
+	"uttc_hackathon_backend/handlers"
 )
 
-type responseMessage struct {
-	Message string `json:"message"`
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// クエリパラメータ "name" を取得
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		// nameパラメータが設定されていない場合はBadRequestを返す
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("BadRequest(status code = 400)"))
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	bytes, err := json.Marshal(responseMessage{
-		Message: "Hello, " + name + "-san" + "!",
-	})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(bytes)
-}
-
 func main() {
-	http.HandleFunc("/hello", handler)
-	fmt.Println("Server is running on port 8080...")
-	http.ListenAndServe(":8080", nil)
+	// データベース初期化
+	config.InitDB()
+	defer config.CloseDB()
+
+	// ルーター設定
+	router := mux.NewRouter()
+
+	// ユーザー関連ルート
+	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
+	router.HandleFunc("/users", handlers.GetUsers).Methods("GET")
+	router.HandleFunc("/users", handlers.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
+
+	// サーバー停止シグナルをキャッチしてDBをクローズ
+	closeDBWithSysCall()
+
+	// サーバー起動
+	log.Println("Listening on :8000")
+	if err := http.ListenAndServe(":8000", router); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// シグナルキャッチでDBを閉じる
+func closeDBWithSysCall() {
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		s := <-sig
+		log.Printf("Received signal: %v", s)
+		config.CloseDB()
+		os.Exit(0)
+	}()
 }
