@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"context"
-	firebase "firebase.google.com/go/v4"
 	"log"
 	"net/http"
+
+	firebase "firebase.google.com/go/v4"
 
 	"firebase.google.com/go/v4/auth"
 )
