@@ -4,8 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"uttc_hackathon_backend/controller"
 	"uttc_hackathon_backend/dao"
@@ -19,7 +17,7 @@ func main() {
 	http.HandleFunc("/user", controller.UserHandler)
 
 	// Handle system call for graceful shutdown
-	handleSysCall()
+	// handleSysCall()
 
 	// 環境変数からポートを取得
 	port := os.Getenv("PORT")
@@ -34,14 +32,14 @@ func main() {
 	}
 }
 
-func handleSysCall() {
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
-	go func() {
-		s := <-sig
-		log.Printf("Received signal: %v", s)
-		dao.CloseDB()
-		log.Println("Database connection closed.")
-		os.Exit(0)
-	}()
-}
+// func handleSysCall() {
+// 	sig := make(chan os.Signal, 1)
+// 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
+// 	go func() {
+// 		s := <-sig
+// 		log.Printf("Received signal: %v", s)
+// 		dao.CloseDB()
+// 		log.Println("Database connection closed.")
+// 		os.Exit(0)
+// 	}()
+// }
