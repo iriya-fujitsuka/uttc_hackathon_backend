@@ -6,16 +6,20 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"uttc_hackathon_backend/config"
-	"uttc_hackathon_backend/handlers"
 
-	"github.com/gorilla/mux"
+	"uttc_hackathon_backend/controller"
+	"uttc_hackathon_backend/dao"
 )
 
 func main() {
-	// データベース初期化
-	config.InitDB()
-	defer config.CloseDB()
+	// Initialize database connection
+	dao.InitDB()
+
+	// Set up routes
+	http.HandleFunc("/user", controller.UserHandler)
+
+	// Handle system call for graceful shutdown
+	handleSysCall()
 
 	// 環境変数からポートを取得
 	port := os.Getenv("PORT")
@@ -23,32 +27,21 @@ func main() {
 		port = "8080" // デフォルトポート
 	}
 
-	// ルーター設定
-	router := mux.NewRouter()
-
-	// ユーザー関連ルート
-	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
-	router.HandleFunc("/users", handlers.GetUsers).Methods("GET")
-	router.HandleFunc("/users", handlers.DeleteUser).Methods("DELETE")
-	router.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
-
-	// シグナルキャッチでDBを閉じる
-	closeDBWithSysCall()
-
-	// サーバー起動
-	log.Printf("Listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, router); err != nil {
+	// Start HTTP server
+	log.Printf("Listening on port %s...\n", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func closeDBWithSysCall() {
+func handleSysCall() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		s := <-sig
 		log.Printf("Received signal: %v", s)
-		config.CloseDB()
+		dao.CloseDB()
+		log.Println("Database connection closed.")
 		os.Exit(0)
 	}()
 }
