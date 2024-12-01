@@ -26,7 +26,7 @@ func InitDB() {
 	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
-
+	log.Printf("Connecting to database: %s\n", connStr)
 	db, err = sql.Open("mysql", connStr)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v\n", err)

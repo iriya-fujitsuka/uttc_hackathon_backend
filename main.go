@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	log.Println("Starting server...")
 	// Initialize database connection
 	dao.InitDB()
 
@@ -18,13 +19,13 @@ func main() {
 
 	// Handle system call for graceful shutdown
 	// handleSysCall()
-
+	log.Println("before env")
 	// 環境変数からポートを取得
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // デフォルトポート
 	}
-
+	log.Printf("after env")
 	// Start HTTP server
 	log.Printf("Listening on port %s...\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
