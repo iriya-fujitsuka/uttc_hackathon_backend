@@ -1,30 +1,11 @@
-# Build Stage
-FROM golang:1.23.3 AS build
+FROM --platform=linux/amd64 golang:1.22 as build
 
 WORKDIR /app
-
-# go.modとgo.sumをコピー
-COPY go.mod go.sum ./
-
-# 依存関係をダウンロード
-RUN go mod download
-
-# ソースコード全体をコピー
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cmd/main /main.go
 
-# Linux用のビルド設定
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
-
-# アプリケーションをビルド
-RUN go build -o app main.go
-
-# Run Stage
-FROM gcr.io/distroless/static
-
-COPY --from=build /app/app /
-
+FROM gcr.io/distroless/base
+WORKDIR /root
+COPY --from=build /app/cmd/main .
 EXPOSE 8080
-
-CMD ["/app/app"]
+CMD ["./main"]
