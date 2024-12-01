@@ -1,0 +1,17 @@
+# ベースとなる公式MySQLイメージ
+FROM mysql:8.0
+
+# メンテナ情報の設定（オプション）
+LABEL maintainer="your_email@example.com"
+
+# 環境変数の設定（必要に応じて変更）
+ENV MYSQL_ROOT_PASSWORD=root_password \
+    MYSQL_DATABASE=sample_db \
+    MYSQL_USER=user_name \
+    MYSQL_PASSWORD=user_password
+
+# 初期化SQLファイルをコンテナ内にコピー
+COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# ポート設定（デフォルトで3306）
+EXPOSE 3306

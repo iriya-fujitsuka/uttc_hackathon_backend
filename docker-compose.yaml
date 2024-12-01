@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: sample_db
+      MYSQL_USER: user_name
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

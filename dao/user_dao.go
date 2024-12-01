@@ -7,19 +7,26 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
 
 func InitDB() {
+	// .envファイルの読み込み
+	var err error
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	// DB接続のための準備
 	mysqlUser := os.Getenv("MYSQL_USER")
-	mysqlPwd := os.Getenv("MYSQL_PWD")
+	mysqlPwd := os.Getenv("MYSQL_PASSWORD")
 	mysqlHost := os.Getenv("MYSQL_HOST")
 	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
-	var err error
+
 	db, err = sql.Open("mysql", connStr)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v\n", err)
