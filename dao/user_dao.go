@@ -32,9 +32,9 @@ func InitDB() {
 		log.Fatalf("Failed to connect to database: %v\n", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Database is unreachable: %v\n", err)
-	}
+	// if err := db.Ping(); err != nil {
+	// 	log.Fatalf("Database is unreachable: %v\n", err)
+	// }
 }
 
 func CloseDB() {
