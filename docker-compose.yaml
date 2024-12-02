@@ -16,18 +16,4 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app-container
-    depends_on:
-      - mysql
-    ports:
-      - "8080:8080"
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: sample_db
-      MYSQL_USER: user_name
-      MYSQL_PASSWORD: user_password
-      MYSQL_HOST: mysql
+  

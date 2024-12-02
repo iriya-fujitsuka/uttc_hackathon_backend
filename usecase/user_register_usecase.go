@@ -13,8 +13,8 @@ import (
 )
 
 type UserRequest struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +24,7 @@ func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userReq.Name == "" || userReq.Age < 20 || userReq.Age > 80 {
+	if userReq.Name == "" || userReq.Email == "" {
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
@@ -32,7 +32,7 @@ func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
 	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
 	id := ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	if err := dao.AddUser(id, userReq.Name, userReq.Age); err != nil {
+	if err := dao.AddUser(id, userReq.Name, userReq.Email); err != nil {
 		log.Printf("Error inserting user: %v\n", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

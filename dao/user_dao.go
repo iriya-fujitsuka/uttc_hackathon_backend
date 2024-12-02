@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	model "uttc_hackathon_backend/models"
 
 	_ "github.com/go-sql-driver/mysql"
 	// "github.com/joho/godotenv"
@@ -43,30 +44,25 @@ func CloseDB() {
 	}
 }
 
-func GetUserByName(name string) ([]map[string]interface{}, error) {
+func GetUserByName(name string) ([]model.User, error) {
 	rows, err := db.Query("SELECT id, name, age FROM user WHERE name = ?", name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	users := []map[string]interface{}{}
+	var users []model.User
 	for rows.Next() {
-		var id, name string
-		var age int
-		if err := rows.Scan(&id, &name, &age); err != nil {
+		var id, name, email string
+		if err := rows.Scan(&id, &name, &email); err != nil {
 			return nil, err
 		}
-		users = append(users, map[string]interface{}{
-			"id":   id,
-			"name": name,
-			"age":  age,
-		})
+		users = append(users, model.User{Id: id, Name: name, Email: email})
 	}
 	return users, nil
 }
 
-func AddUser(id, name string, age int) error {
-	_, err := db.Exec("INSERT INTO user (id, name, age) VALUES (?, ?, ?)", id, name, age)
+func AddUser(id, name string, email string) error {
+	_, err := db.Exec("INSERT INTO users (id, name, email) VALUES (?, ?, ?)", id, name, email)
 	return err
 }

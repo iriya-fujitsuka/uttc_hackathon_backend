@@ -9,13 +9,34 @@ import (
 	"uttc_hackathon_backend/dao"
 )
 
+func CORSMiddlewareProd(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+		// プリフライトリクエストの応答
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// 次のミドルウェアまたはハンドラを呼び出す
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	log.Println("Starting server...")
 	// Initialize database connection
 	dao.InitDB()
 
-	// Set up routes
-	http.HandleFunc("/user", controller.UserHandler)
+	// Set up the router
+	mux := http.NewServeMux()
+	mux.HandleFunc("/users", controller.UserHandler)
+
+	// Wrap the router with the CORS middleware
+	handler := CORSMiddlewareProd(mux)
 
 	// Handle system call for graceful shutdown
 	// handleSysCall()
@@ -28,7 +49,7 @@ func main() {
 	log.Printf("after env")
 	// Start HTTP server
 	log.Printf("Listening on port %s...\n", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
 		log.Fatal(err)
 	}
 }
