@@ -62,7 +62,11 @@ func GetUserByName(name string) ([]model.User, error) {
 	return users, nil
 }
 
-func AddUser(id, name string, email string) error {
-	_, err := db.Exec("INSERT INTO users (id, name, email) VALUES (?, ?, ?)", id, name, email)
+func AddUser(id, name, email string) error {
+	query := "INSERT INTO users (id, name, email) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, id, name, email)
+	if err != nil {
+		log.Printf("Database insertion failed: %v\n", err)
+	}
 	return err
 }
