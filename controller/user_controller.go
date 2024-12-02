@@ -8,13 +8,17 @@ import (
 )
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request: Method=%s, Path=%s, RemoteAddr=%s", r.Method, r.URL.Path, r.RemoteAddr)
+
 	switch r.Method {
 	case http.MethodGet:
+		log.Println("Handling GET request")
 		usecase.HandleUserSearch(w, r)
 	case http.MethodPost:
+		log.Println("Handling POST request")
 		usecase.HandleUserRegister(w, r)
 	default:
 		log.Printf("Unsupported HTTP Method: %s\n", r.Method)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
