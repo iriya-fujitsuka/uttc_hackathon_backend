@@ -8,6 +8,7 @@ import (
 )
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json") // JSONレスポンスを明示
 	log.Printf("Received request: Method=%s, Path=%s, RemoteAddr=%s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	switch r.Method {
