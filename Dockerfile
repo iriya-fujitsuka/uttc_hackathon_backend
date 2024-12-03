@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cmd/main ./main.go
 ENV MYSQL_ROOT_PASSWORD=root_password \
     MYSQL_DATABASE=hackathon \
     MYSQL_USER=uttc \
-    MYSQL_PASSWORD=0120
+    MYSQL_PASSWORD=1234
 
 FROM gcr.io/distroless/base
 WORKDIR /root

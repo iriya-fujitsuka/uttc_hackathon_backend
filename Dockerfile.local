@@ -1,17 +1,30 @@
-# ベースとなる公式MySQLイメージ
-FROM mysql:8.0
+# ベースイメージとして最新のgolangを使用
+FROM --platform=linux/amd64 golang:1.23.3 as build
 
-# メンテナ情報の設定（オプション）
-LABEL maintainer="your_email@example.com"
+WORKDIR /app
+COPY . .
 
-# 環境変数の設定（必要に応じて変更）
+# アプリケーションをビルド
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cmd/main ./main.go
+
+# 開発環境用設定
+FROM golang:1.23.3
+WORKDIR /app
+
+# 環境変数の設定
 ENV MYSQL_ROOT_PASSWORD=root_password \
     MYSQL_DATABASE=hackathon \
     MYSQL_USER=uttc \
-    MYSQL_PASSWORD=0120
+    MYSQL_PASSWORD=1234 \
+    MYSQL_HOST=mysql_container \
+    MYSQL_PORT=3306
 
-# 初期化SQLファイルをコンテナ内にコピー
-COPY ./init.sql /docker-entrypoint-initdb.d/
+# ソースコードをコピー
+COPY --from=build /app/cmd/main .
+COPY . .
 
-# ポート設定（デフォルトで3306）
-EXPOSE 3306
+# 必要ポートを公開
+EXPOSE 8080
+
+# 実行コマンド
+CMD ["./main"]
