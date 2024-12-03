@@ -7,8 +7,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cmd/main ./main.go
 # 環境変数の設定（必要に応じて変更）
 ENV MYSQL_ROOT_PASSWORD=root_password \
     MYSQL_DATABASE=hackathon \
-    MYSQL_USER=uttc \
-    MYSQL_PASSWORD=0120
+    MYSQL_USER=root \
+    MYSQL_PASSWORD=root_password \
+    MYSQL_HOST=unix(/cloudsql/term6-iriya-fujitsuka:us-central1:uttc)
 
 FROM gcr.io/distroless/base
 WORKDIR /root
