@@ -45,7 +45,7 @@ func CloseDB() {
 }
 
 func GetUserByName(name string) ([]model.User, error) {
-	rows, err := db.Query("SELECT id, name, age FROM user WHERE name = ?", name)
+	rows, err := db.Query("SELECT id, name, email FROM users WHERE name = ?", name)
 	if err != nil {
 		return nil, err
 	}
