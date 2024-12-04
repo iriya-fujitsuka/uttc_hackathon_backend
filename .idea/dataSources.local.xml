@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="GO-242.21829.165">
+    <data-source name="CloudSQL" uuid="5ca03a35-2339-4b9b-942b-028f34dbe99e">
+      <database-info product="MySQL" version="8.0.31-google" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-j-8.2.0 (Revision: 06a1f724497fd81c6a659131fda822c9e5085b6c)" dbms="MYSQL" exact-version="8.0.31" exact-driver-version="8.2">
+        <extra-name-characters>#@</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+        <jdbc-catalog-is-schema>true</jdbc-catalog-is-schema>
+      </database-info>
+      <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="@" />
+        </introspection-scope>
+      </schema-mapping>
+      <ssl-config use-ide-store="true" use-java-store="true" use-system-store="true">
+        <ca-cert>C:\Users\iriya\uttc_cert\server-ca (3).pem</ca-cert>
+        <client-cert>C:\Users\iriya\uttc_cert\client-cert (1).pem</client-cert>
+        <client-key>C:\Users\iriya\uttc_cert\client-key (1).pem</client-key>
+        <enabled>true</enabled>
+        <mode>REQUIRE</mode>
+      </ssl-config>
+    </data-source>
+  </component>
+</project>
