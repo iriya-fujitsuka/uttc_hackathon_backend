@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	model "uttc_hackathon_backend/models"
+	userModel "uttc_hackathon_backend/models/user"
+	postModel "uttc_hackathon_backend/models/post"
 	userController "uttc_hackathon_backend/controller/user"
 	postController "uttc_hackathon_backend/controller/post"
 
