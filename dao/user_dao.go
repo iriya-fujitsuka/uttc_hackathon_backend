@@ -10,7 +10,7 @@ import (
 	postController "uttc_hackathon_backend/controller/post"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 var db *sql.DB
@@ -18,18 +18,18 @@ var db *sql.DB
 func InitDB() {
 	// .envファイルの読み込み
 	var err error
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
+	// err = godotenv.Load()
+	// if err != nil {
+	// 	log.Fatalf("Error loading .env file")
+	// }
 	// DB接続のための準備
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPwd := os.Getenv("MYSQL_PASSWORD")
 	mysqlHost := os.Getenv("MYSQL_HOST")
 	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", mysqlUser, mysqlPwd, mysqlHost, "3306", mysqlDatabase)
-	// 	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
+	// connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", mysqlUser, mysqlPwd, mysqlHost, "3306", mysqlDatabase)
+	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
 	log.Printf("Connecting to database: %s\n", connStr)
 	db, err = sql.Open("mysql", connStr)
 	if err != nil {
