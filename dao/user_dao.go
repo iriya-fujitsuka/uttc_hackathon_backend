@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	userModel "uttc_hackathon_backend/models/user"
-	postModel "uttc_hackathon_backend/models/post"
-	userController "uttc_hackathon_backend/controller/user"
-	postController "uttc_hackathon_backend/controller/post"
+	"uttc_hackathon_backend/models"
 
 	_ "github.com/go-sql-driver/mysql"
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
@@ -19,10 +16,10 @@ var db *sql.DB
 func InitDB() {
 	// .envファイルの読み込み
 	var err error
-	// err = godotenv.Load()
-	// if err != nil {
-	// 	log.Fatalf("Error loading .env file")
-	// }
+	err = godotenv.Load()
+	if err != nil {
+		log.Printf("Error loading .env file")
+	}
 	// DB接続のための準備
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPwd := os.Getenv("MYSQL_PASSWORD")
@@ -48,20 +45,20 @@ func CloseDB() {
 	}
 }
 
-func GetUserByName(name string) ([]model.User, error) {
+func GetUserByName(name string) ([]models.User, error) {
 	rows, err := db.Query("SELECT id, name, email FROM users WHERE name = ?", name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var users []model.User
+	var users []models.User
 	for rows.Next() {
 		var id, name, email string
 		if err := rows.Scan(&id, &name, &email); err != nil {
 			return nil, err
 		}
-		users = append(users, model.User{Id: id, Name: name, Email: email})
+		users = append(users, models.User{Id: id, Name: name, Email: email})
 	}
 	return users, nil
 }
@@ -83,4 +80,22 @@ func AddPost(content string) error {
 		return err
 	}
 	return nil
+}
+
+func GetPosts() ([]models.Post, error) {
+	rows, err := db.Query("SELECT id, content FROM posts")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var id, content string
+		if err := rows.Scan(&id, &content); err != nil {
+			return nil, err
+		}
+		posts = append(posts, models.Post{ID: id, Content: content})
+	}
+	return posts, nil
 }

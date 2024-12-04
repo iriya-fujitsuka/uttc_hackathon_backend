@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"log"
 	"net/http"
-	"uttc_hackathon_backend/models"
+	// "uttc_hackathon_backend/models"
 	"uttc_hackathon_backend/usecase"
 )
 
@@ -18,7 +18,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		usecase.HandlePostCreate(w, r)
 	case http.MethodGet:
 		log.Println("Handling GET request")
-		usecase.HandlePostFetch(w, r)
+		usecase.HandlePostList(w, r)
 	default:
 		log.Printf("Unsupported HTTP Method: %s\n", r.Method)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
