@@ -4,8 +4,11 @@ FROM --platform=linux/amd64 golang:1.23.3 as build
 WORKDIR /app
 COPY . .
 
+# 必要な依存関係をインストール
+RUN go get github.com/joho/godotenv
 # アプリケーションをビルド
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cmd/main ./main.go
+# RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 
+RUN go build -o cmd/main ./main.go
 
 # 開発環境用設定
 FROM golang:1.23.3

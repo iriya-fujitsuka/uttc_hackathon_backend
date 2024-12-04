@@ -34,7 +34,8 @@ func main() {
 	// Set up the router
 	mux := http.NewServeMux()
 	mux.HandleFunc("/users", controller.UserHandler)
-
+	mux.HandleFunc("/api/posts", controller.PostHandler)
+	
 	// Wrap the router with the CORS middleware
 	handler := CORSMiddlewareProd(mux)
 

@@ -12,8 +12,9 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql_container
+    command: mysqld --console --skip-log-bin --skip-general-log
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: hackathon
       MYSQL_USER: uttc
       MYSQL_PASSWORD: 1234
