@@ -5,14 +5,15 @@ WORKDIR /app
 COPY . .
 
 # 必要な依存関係をインストール
+# RUN go version
 RUN go mod init uttc_hackathon_backend
 RUN go get github.com/joho/godotenv
 # アプリケーションをビルド
 # RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 
 RUN go build -o cmd/main ./main.go
 
-# 開発環境用設定
-FROM golang:1.23.3
+# 実行用の軽量イメージ
+FROM alpine:latest
 WORKDIR /app
 
 # 環境変数の設定
@@ -20,12 +21,11 @@ ENV MYSQL_ROOT_PASSWORD=1234 \
     MYSQL_DATABASE=hackathon \
     MYSQL_USER=uttc \
     MYSQL_PASSWORD=1234 \
-    MYSQL_HOST=mysql_container \
+    MYSQL_HOST=tcp(mysql:3306) \
     MYSQL_PORT=3306
 
-# ソースコードをコピー
+# ビルドしたバイナリをコピー
 COPY --from=build /app/cmd/main .
-COPY . .
 
 # 必要ポートを公開
 EXPOSE 8080

@@ -72,10 +72,10 @@ func AddUser(id, name, email string) error {
 	return err
 }
 
-// 投稿を追加 (返信対応)
+// 投稿を追加 (すべてのフィールドを含める)
 func AddPost(post models.Post) error {
-	query := "INSERT INTO posts (content) VALUES (?)"
-	_, err := db.Exec(query, post.Content)
+	query := "INSERT INTO posts (user_id, community_id, content, reply_to_id) VALUES (?, ?, ?, ?)"
+	_, err := db.Exec(query, post.UserID, post.CommunityID, post.Content, post.ReplyToID)
 	if err != nil {
 		log.Printf("Failed to insert post: %v\n", err)
 		return err

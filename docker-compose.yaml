@@ -1,27 +1,28 @@
+version: '3.8'
+
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile.local
+    volumes:
+      - .:/app
     ports:
       - "8080:8080"
     depends_on:
       - mysql
 
   mysql:
-    image: mysql:8.0
-    container_name: mysql_container
-    command: mysqld --console --skip-log-bin --skip-general-log
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: hackathon
-      MYSQL_USER: root
+      MYSQL_USER: uttc
       MYSQL_PASSWORD: 1234
-      MYSQL_PORT: 3306
     ports:
       - "3306:3306"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
 
 volumes:
   mysql_data:
