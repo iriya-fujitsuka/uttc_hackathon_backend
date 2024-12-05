@@ -102,8 +102,14 @@ func GetPosts() ([]models.Post, error) {
 	var posts []models.Post
 	for rows.Next() {
 		var post models.Post
-		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
+		var replyToID sql.NullString
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &replyToID, &post.CreatedAt); err != nil {
 			return nil, err
+		}
+		if replyToID.Valid {
+			post.ReplyToID = replyToID.String
+		} else {
+			post.ReplyToID = ""
 		}
 		posts = append(posts, post)
 	}
