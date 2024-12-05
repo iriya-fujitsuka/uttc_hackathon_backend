@@ -14,7 +14,7 @@ func HandlePostCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := dao.AddPost(post.Content); err != nil {
+	if err := dao.AddPost(post); err != nil {
 		http.Error(w, "Failed to create post", http.StatusInternalServerError)
 		return
 	}

@@ -72,9 +72,10 @@ func AddUser(id, name, email string) error {
 	return err
 }
 
-func AddPost(content string) error {
+// 投稿を追加 (返信対応)
+func AddPost(post models.Post) error {
 	query := "INSERT INTO posts (content) VALUES (?)"
-	_, err := db.Exec(query, content)
+	_, err := db.Exec(query, post.Content)
 	if err != nil {
 		log.Printf("Failed to insert post: %v\n", err)
 		return err
@@ -82,8 +83,9 @@ func AddPost(content string) error {
 	return nil
 }
 
+// 投稿を取得 (すべての投稿を取得)
 func GetPosts() ([]models.Post, error) {
-	rows, err := db.Query("SELECT id, content FROM posts")
+	rows, err := db.Query("SELECT id, user_id, community_id, content, reply_to_id, created_at FROM posts")
 	if err != nil {
 		return nil, err
 	}
@@ -91,11 +93,30 @@ func GetPosts() ([]models.Post, error) {
 
 	var posts []models.Post
 	for rows.Next() {
-		var id, content string
-		if err := rows.Scan(&id, &content); err != nil {
+		var post models.Post
+		if err := rows.Scan(&post.ID, &post.UserID, &post.CommunityID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
 			return nil, err
 		}
-		posts = append(posts, models.Post{ID: id, Content: content})
+		posts = append(posts, post)
 	}
 	return posts, nil
+}
+
+// 特定投稿の返信を取得
+func GetReplies(postID string) ([]models.Post, error) {
+	rows, err := db.Query("SELECT id, user_id, community_id, content, reply_to_id, created_at FROM posts WHERE reply_to_id = ?", postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []models.Post
+	for rows.Next() {
+		var post models.Post
+		if err := rows.Scan(&post.ID, &post.UserID, &post.CommunityID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
+			return nil, err
+		}
+		replies = append(replies, post)
+	}
+	return replies, nil
 }
