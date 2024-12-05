@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   backend:
     build:
@@ -16,7 +15,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: hackathon
-      MYSQL_USER: uttc
+      MYSQL_USER: root
       MYSQL_PASSWORD: 1234
       MYSQL_PORT: 3306
     ports:
