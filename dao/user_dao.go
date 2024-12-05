@@ -73,8 +73,17 @@ func AddUser(id, name, email string) error {
 }
 
 func AddPost(post models.Post) error {
-	query := "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, ?)"
-	_, err := db.Exec(query, post.UserID, post.Content, post.ReplyToID)
+	var query string
+	var err error
+
+	if post.ReplyToID == "" {
+		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, NULL)"
+		_, err = db.Exec(query, post.UserID, post.Content)
+	} else {
+		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, ?)"
+		_, err = db.Exec(query, post.UserID, post.Content, post.ReplyToID)
+	}
+
 	if err != nil {
 		log.Printf("Failed to insert post: %v\n", err)
 		return err
