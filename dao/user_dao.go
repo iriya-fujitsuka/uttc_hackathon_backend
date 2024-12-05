@@ -72,10 +72,9 @@ func AddUser(id, name, email string) error {
 	return err
 }
 
-// 投稿を追加 (すべてのフィールドを含める)
 func AddPost(post models.Post) error {
-	query := "INSERT INTO posts (user_id, community_id, content, reply_to_id) VALUES (?, ?, ?, ?)"
-	_, err := db.Exec(query, post.UserID, post.CommunityID, post.Content, post.ReplyToID)
+	query := "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, post.UserID, post.Content, post.ReplyToID)
 	if err != nil {
 		log.Printf("Failed to insert post: %v\n", err)
 		return err
@@ -85,7 +84,7 @@ func AddPost(post models.Post) error {
 
 // 投稿を取得 (すべての投稿を取得)
 func GetPosts() ([]models.Post, error) {
-	rows, err := db.Query("SELECT id, user_id, community_id, content, reply_to_id, created_at FROM posts")
+	rows, err := db.Query("SELECT id, user_id, content, reply_to_id, created_at FROM posts")
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +93,7 @@ func GetPosts() ([]models.Post, error) {
 	var posts []models.Post
 	for rows.Next() {
 		var post models.Post
-		if err := rows.Scan(&post.ID, &post.UserID, &post.CommunityID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
 			return nil, err
 		}
 		posts = append(posts, post)
@@ -104,7 +103,7 @@ func GetPosts() ([]models.Post, error) {
 
 // 特定投稿の返信を取得
 func GetReplies(postID string) ([]models.Post, error) {
-	rows, err := db.Query("SELECT id, user_id, community_id, content, reply_to_id, created_at FROM posts WHERE reply_to_id = ?", postID)
+	rows, err := db.Query("SELECT id, user_id, content, reply_to_id, created_at FROM posts WHERE reply_to_id = ?", postID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +112,7 @@ func GetReplies(postID string) ([]models.Post, error) {
 	var replies []models.Post
 	for rows.Next() {
 		var post models.Post
-		if err := rows.Scan(&post.ID, &post.UserID, &post.CommunityID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &post.ReplyToID, &post.CreatedAt); err != nil {
 			return nil, err
 		}
 		replies = append(replies, post)
