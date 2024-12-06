@@ -134,3 +134,27 @@ func GetReplies(postID string) ([]models.Post, error) {
 	}
 	return replies, nil
 }
+
+func GetRepliesByPostID(postID string) ([]models.Post, error) {
+	rows, err := db.Query("SELECT id, user_id, content, reply_to_id, created_at FROM posts WHERE reply_to_id = ?", postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []models.Post
+	for rows.Next() {
+		var post models.Post
+		var replyToID sql.NullString
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &replyToID, &post.CreatedAt); err != nil {
+			return nil, err
+		}
+		if replyToID.Valid {
+			post.ReplyToID = replyToID.String
+		} else {
+			post.ReplyToID = ""
+		}
+		replies = append(replies, post)
+	}
+	return replies, nil
+}
