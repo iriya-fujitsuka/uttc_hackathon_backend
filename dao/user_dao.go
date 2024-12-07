@@ -158,3 +158,92 @@ func GetRepliesByPostID(postID string) ([]models.Post, error) {
 	}
 	return replies, nil
 }
+
+func ToggleLike(userID, postID string) error {
+	log.Printf("Toggling like for user %s and post %s", userID, postID)
+
+	// �ーザーが存在するか確認
+	var userExists bool
+	userCheckQuery := "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)"
+	err := db.QueryRow(userCheckQuery, userID).Scan(&userExists)
+	if err != nil {
+		log.Printf("Error checking user existence: %v", err)
+		return err
+	}
+	if !userExists {
+		log.Printf("User %s does not exist", userID)
+		return fmt.Errorf("user does not exist")
+	}
+
+	// すでに「いいね」されているかを確認
+	var exists bool
+	checkQuery := "SELECT EXISTS(SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?)"
+	err = db.QueryRow(checkQuery, userID, postID).Scan(&exists)
+	if err != nil {
+		log.Printf("Error checking like existence: %v", err)
+		return err
+	}
+
+	if exists {
+		// すでに「いいね」されている場合は削除
+		deleteQuery := "DELETE FROM likes WHERE user_id = ? AND post_id = ?"
+		_, err = db.Exec(deleteQuery, userID, postID)
+		if err != nil {
+			log.Printf("Error deleting like: %v", err)
+			return err
+		}
+		log.Printf("Like removed for user %s and post %s", userID, postID)
+	} else {
+		// まだ「いいね」��れていない場合は追加
+		insertQuery := "INSERT INTO likes (user_id, post_id) VALUES (?, ?)"
+		_, err = db.Exec(insertQuery, userID, postID)
+		if err != nil {
+			log.Printf("Error adding like: %v", err)
+			return err
+		}
+		log.Printf("Like added for user %s and post %s", userID, postID)
+	}
+
+	return nil
+}
+
+// GetLikeCount は特定の投稿に対する「いいね」の数を取得します。
+func GetLikeCount(postID string) (int, error) {
+	var count int
+	query := "SELECT COUNT(*) FROM likes WHERE post_id = ?"
+	err := db.QueryRow(query, postID).Scan(&count)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil // いいねがない場合は0を返す
+		}
+		log.Printf("Error getting like count: %v", err)
+		return 0, err
+	}
+	return count, nil
+}
+
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	query := "SELECT id, name, email FROM users WHERE email = ?"
+	err := db.QueryRow(query, email).Scan(&user.Id, &user.Name, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // ユーザーが見つからない場合
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func GetUserByID(userID string) (*models.User, error) {
+	var user models.User
+	query := "SELECT id, name, email FROM users WHERE id = ?"
+	err := db.QueryRow(query, userID).Scan(&user.Id, &user.Name, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // ユーザーが見つからない場合
+		}
+		return nil, err
+	}
+	return &user, nil
+}

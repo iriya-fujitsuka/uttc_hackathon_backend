@@ -36,6 +36,9 @@ func main() {
 	mux.HandleFunc("/users", controller.UserHandler)
 	mux.HandleFunc("/api/posts", controller.PostHandler)
 	mux.HandleFunc("/api/replies", controller.ReplyHandler)
+	mux.HandleFunc("/api/toggle-like", controller.ToggleLike)
+	mux.HandleFunc("/api/like-counts", controller.GetLikeCount)
+	mux.HandleFunc("/api/users", controller.GetUserByEmailHandler)
 	
 	// Wrap the router with the CORS middleware
 	handler := CORSMiddlewareProd(mux)
