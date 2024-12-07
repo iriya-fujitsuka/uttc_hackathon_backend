@@ -46,11 +46,13 @@ func HandlePostReply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := dao.AddPost(post); err != nil {
+	postID, err := dao.AddPost(post)
+	if err != nil {
 		log.Printf("Error adding reply: %v", err)
 		http.Error(w, "Failed to create reply", http.StatusInternalServerError)
 		return
 	}
+	post.ID = postID
 
 	w.WriteHeader(http.StatusCreated)
-} 
+}

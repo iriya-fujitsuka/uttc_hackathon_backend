@@ -72,23 +72,31 @@ func AddUser(id, name, email string) error {
 	return err
 }
 
-func AddPost(post models.Post) error {
+func AddPost(post models.Post) (string, error) {
 	var query string
 	var err error
+	var result sql.Result
 
 	if post.ReplyToID == "" {
 		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, NULL)"
-		_, err = db.Exec(query, post.UserID, post.Content)
+		result, err = db.Exec(query, post.UserID, post.Content)
 	} else {
 		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, ?)"
-		_, err = db.Exec(query, post.UserID, post.Content, post.ReplyToID)
+		result, err = db.Exec(query, post.UserID, post.Content, post.ReplyToID)
 	}
 
 	if err != nil {
 		log.Printf("Failed to insert post: %v\n", err)
-		return err
+		return "", err
 	}
-	return nil
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Printf("Failed to get last insert ID: %v\n", err)
+		return "", err
+	}
+
+	return fmt.Sprintf("%d", id), nil // IDを文字列として返す
 }
 
 // 投稿を取得 (すべての投稿を取得)
@@ -162,7 +170,7 @@ func GetRepliesByPostID(postID string) ([]models.Post, error) {
 func ToggleLike(userID, postID string) error {
 	log.Printf("Toggling like for user %s and post %s", userID, postID)
 
-	// �ーザーが存在するか確認
+	// ユーザーが存在するか確認
 	var userExists bool
 	userCheckQuery := "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)"
 	err := db.QueryRow(userCheckQuery, userID).Scan(&userExists)
@@ -194,7 +202,7 @@ func ToggleLike(userID, postID string) error {
 		}
 		log.Printf("Like removed for user %s and post %s", userID, postID)
 	} else {
-		// まだ「いいね」��れていない場合は追加
+		// まだ「いいね」されていない場合は追加
 		insertQuery := "INSERT INTO likes (user_id, post_id) VALUES (?, ?)"
 		_, err = db.Exec(insertQuery, userID, postID)
 		if err != nil {
@@ -246,4 +254,14 @@ func GetUserByID(userID string) (*models.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func AddReply(postID, replyContent string) error {
+	query := "INSERT INTO replies (post_id, content) VALUES (?, ?)"
+	_, err := db.Exec(query, postID, replyContent)
+	if err != nil {
+		log.Printf("Error adding reply: %v", err)
+		return err
+	}
+	return nil
 }
