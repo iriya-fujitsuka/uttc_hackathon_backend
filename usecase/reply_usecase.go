@@ -46,6 +46,15 @@ func HandlePostReply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 元の投稿のコミュニティIDを取得
+	originalPost, err := dao.GetPostByID(post.ReplyToID)
+	if err != nil {
+		log.Printf("Error fetching original post: %v", err)
+		http.Error(w, "Failed to fetch original post", http.StatusInternalServerError)
+		return
+	}
+	post.CommunityID = originalPost.CommunityID
+
 	postID, err := dao.AddPost(post)
 	if err != nil {
 		log.Printf("Error adding reply: %v", err)

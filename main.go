@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"uttc_hackathon_backend/controller"
 	"uttc_hackathon_backend/dao"
 )
@@ -32,16 +33,19 @@ func main() {
 	dao.InitDB()
 
 	// Set up the router
-	mux := http.NewServeMux()
-	mux.HandleFunc("/users", controller.UserHandler)
-	mux.HandleFunc("/api/posts", controller.PostHandler)
-	mux.HandleFunc("/api/replies", controller.ReplyHandler)
-	mux.HandleFunc("/api/toggle-like", controller.ToggleLike)
-	mux.HandleFunc("/api/like-counts", controller.GetLikeCount)
-	mux.HandleFunc("/api/users", controller.GetUserByEmailHandler)
+	router := mux.NewRouter()
+	router.HandleFunc("/users", controller.UserHandler)
+	router.HandleFunc("/api/posts", controller.PostHandler)
+	router.HandleFunc("/api/replies", controller.ReplyHandler)
+	router.HandleFunc("/api/toggle-like", controller.ToggleLike)
+	router.HandleFunc("/api/like-counts", controller.GetLikeCount)
+	router.HandleFunc("/api/users", controller.GetUserByEmailHandler)
+	router.HandleFunc("/api/communities", controller.GetCommunitiesHandler).Methods("GET")
+	router.HandleFunc("/api/communities", controller.AddCommunityHandler).Methods("POST")
+	router.HandleFunc("/api/communities", controller.DeleteCommunityHandler).Methods("DELETE")
 	
 	// Wrap the router with the CORS middleware
-	handler := CORSMiddlewareProd(mux)
+	handler := CORSMiddlewareProd(router)
 
 	// Handle system call for graceful shutdown
 	// handleSysCall()

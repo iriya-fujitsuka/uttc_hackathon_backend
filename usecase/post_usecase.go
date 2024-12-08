@@ -31,13 +31,17 @@ func logJSON(v interface{}) {
 func HandlePostCreate(w http.ResponseWriter, r *http.Request) {
 	var post models.Post
 	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
+		log.Printf("Invalid request payload: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	// user_idが空でないことを確認
-	if post.UserID == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+	log.Printf("Received post: %+v", post) // 受信した投稿データをログに記録
+
+	// user_idとcommunity_idが空でないことを確認
+	if post.UserID == "" || post.CommunityID == 0 {
+		log.Printf("Missing user_id or community_id: user_id=%s, community_id=%d", post.UserID, post.CommunityID)
+		http.Error(w, "User ID and Community ID are required", http.StatusBadRequest)
 		return
 	}
 
