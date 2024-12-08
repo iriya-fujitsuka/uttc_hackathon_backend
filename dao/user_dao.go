@@ -78,11 +78,11 @@ func AddPost(post models.Post) (string, error) {
 	var result sql.Result
 
 	if post.ReplyToID == "" {
-		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, NULL)"
-		result, err = db.Exec(query, post.UserID, post.Content)
+		query = "INSERT INTO posts (user_id, community_id, content, reply_to_id) VALUES (?, ?, ?, NULL)"
+		result, err = db.Exec(query, post.UserID, post.CommunityID, post.Content)
 	} else {
-		query = "INSERT INTO posts (user_id, content, reply_to_id) VALUES (?, ?, ?)"
-		result, err = db.Exec(query, post.UserID, post.Content, post.ReplyToID)
+		query = "INSERT INTO posts (user_id, community_id, content, reply_to_id) VALUES (?, ?, ?, ?)"
+		result, err = db.Exec(query, post.UserID, post.CommunityID, post.Content, post.ReplyToID)
 	}
 
 	if err != nil {
