@@ -101,7 +101,8 @@ func AddPost(post models.Post) (string, error) {
 
 // 投稿を取得 (すべての投稿を取得)
 func GetPosts() ([]models.Post, error) {
-	rows, err := db.Query("SELECT id, user_id, content, reply_to_id, created_at FROM posts")
+	query := "SELECT posts.id, posts.user_id, posts.community_id, communities.name AS community_name, posts.content, posts.reply_to_id, posts.created_at FROM posts LEFT JOIN communities ON posts.community_id = communities.id"
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +111,21 @@ func GetPosts() ([]models.Post, error) {
 	var posts []models.Post
 	for rows.Next() {
 		var post models.Post
+		var communityID sql.NullInt64
+		var communityName sql.NullString
 		var replyToID sql.NullString
-		if err := rows.Scan(&post.ID, &post.UserID, &post.Content, &replyToID, &post.CreatedAt); err != nil {
+		if err := rows.Scan(&post.ID, &post.UserID, &communityID, &communityName, &post.Content, &replyToID, &post.CreatedAt); err != nil {
 			return nil, err
+		}
+		if communityID.Valid {
+			post.CommunityID = int(communityID.Int64)
+		} else {
+			post.CommunityID = 0 // または適切なデフォルト値
+		}
+		if communityName.Valid {
+			post.CommunityName = communityName.String
+		} else {
+			post.CommunityName = "" // または適切なデフォルト値
 		}
 		if replyToID.Valid {
 			post.ReplyToID = replyToID.String

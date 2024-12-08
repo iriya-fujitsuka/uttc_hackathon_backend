@@ -18,4 +18,4 @@ func GetPostByID(postID string) (*models.Post, error) {
 		return nil, err
 	}
 	return &post, nil
-} 
+}
